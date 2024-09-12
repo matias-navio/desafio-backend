@@ -1,8 +1,8 @@
 package com.matias.desafio_backend.desafio_backend.xml;
 
-import com.matias.desafio_backend.desafio_backend.entities.Empresa;
-import com.matias.desafio_backend.desafio_backend.entities.Movimientos;
-import com.matias.desafio_backend.desafio_backend.repositories.EmpresaRepository;
+import com.matias.desafio_backend.desafio_backend.entities.Company;
+import com.matias.desafio_backend.desafio_backend.entities.Movement;
+import com.matias.desafio_backend.desafio_backend.repositories.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -23,27 +23,27 @@ import java.util.List;
 public class ReadXmlFile {
 
     @Autowired
-    private EmpresaRepository empresaRepository;
+    private CompanyRepository companyRepository;
 
-    public void leerYGuardarEmpresas(String filePath){
+    public void readAndSveCompany(String filePath){
 
-        List<Empresa> empresas = createFile(filePath);
-        guardarEmpresasEnBaseDeDatos(empresas);
+        List<Company> companies = createFile(filePath);
+        saveCompaniesInDatabase(companies);
     }
 
-    private void guardarEmpresasEnBaseDeDatos(List<Empresa> empresas) {
+    private void saveCompaniesInDatabase(List<Company> companies) {
 
-        for (Empresa empresa : empresas) {
+        for (Company company : companies) {
 
-            if(empresaRepository.findByCuit(empresa.getCuit()).isEmpty())
-                empresaRepository.save(empresa);
+            if(companyRepository.findByCuit(company.getCuit()).isEmpty())
+                companyRepository.save(company);
 
         }
     }
 
-    private static List<Empresa> createFile(String filePath){
+    private static List<Company> createFile(String filePath){
 
-        List<Empresa> listaEmpresas = new ArrayList<>();
+        List<Company> companiesList = new ArrayList<>();
 
         try {
 
@@ -56,66 +56,66 @@ public class ReadXmlFile {
 
             System.out.println("Elemento raiz: " + documentXml.getDocumentElement().getNodeName());
 
-            NodeList empresas = documentXml.getElementsByTagName("Empresa");
+            NodeList nodeCompaniesList = documentXml.getElementsByTagName("Empresa");
 
-            for (int i = 0; i < empresas.getLength(); i++){
+            for (int i = 0; i < nodeCompaniesList.getLength(); i++){
 
-                Node empresa = empresas.item(i);
+                Node nodeCompany = nodeCompaniesList.item(i);
 
-                if(empresa.getNodeType() == Node.ELEMENT_NODE){
-                    Element empresaElement = (Element) empresa;
+                if(nodeCompany.getNodeType() == Node.ELEMENT_NODE){
+                    Element companyElement = (Element) nodeCompany;
 
                     // contruyo la empresa con un Builder a partir de los tags obtenidos en el XML
-                    Empresa newEmpresa = Empresa.builder()
-                            .codigoPostal(empresaElement.getElementsByTagName("NroContrato")
+                    Company newCompany = Company.builder()
+                            .codigoPostal(companyElement.getElementsByTagName("NroContrato")
                                     .item(0).getTextContent())
-                            .domicilio(empresaElement.getElementsByTagName("Domicilio")
+                            .domicilio(companyElement.getElementsByTagName("Domicilio")
                                     .item(0).getTextContent())
-                            .organizador(empresaElement.getElementsByTagName("Organizador")
+                            .organizador(companyElement.getElementsByTagName("Organizador")
                                     .item(0).getTextContent())
-                            .cuit(empresaElement.getElementsByTagName("CUIT")
+                            .cuit(companyElement.getElementsByTagName("CUIT")
                                     .item(0).getTextContent())
-                            .ciiu(empresaElement.getElementsByTagName("CIIU")
+                            .ciiu(companyElement.getElementsByTagName("CIIU")
                                     .item(0).getTextContent())
-                            .fechaHastaNov(empresaElement.getElementsByTagName("FechaHastaNov")
+                            .fechaHastaNov(companyElement.getElementsByTagName("FechaHastaNov")
                                     .item(0).getTextContent())
-                            .fechaDesdeNov(empresaElement.getElementsByTagName("FechaDesdeNov")
+                            .fechaDesdeNov(companyElement.getElementsByTagName("FechaDesdeNov")
                                     .item(0).getTextContent())
-                            .denominacion(empresaElement.getElementsByTagName("Denominacion")
+                            .denominacion(companyElement.getElementsByTagName("Denominacion")
                                     .item(0).getTextContent())
-                            .productor(empresaElement.getElementsByTagName("Productor")
+                            .productor(companyElement.getElementsByTagName("Productor")
                                     .item(0).getTextContent())
-                            .nroContrato(Integer.parseInt(empresaElement.getElementsByTagName("NroContrato")
+                            .nroContrato(Integer.parseInt(companyElement.getElementsByTagName("NroContrato")
                                     .item(0).getTextContent()))
                             .build();
 
-                    List<Movimientos> movimientos = new ArrayList<>();
-                    NodeList movimientosNodeList = empresaElement.getElementsByTagName("Movimiento");
+                    List<Movement> movements = new ArrayList<>();
+                    NodeList movementsNodeList = companyElement.getElementsByTagName("Movimiento");
 
-                    for(int j = 0; j < movimientosNodeList.getLength(); j++){
-                        Element elementMovimineto = (Element) movimientosNodeList.item(j);
+                    for(int j = 0; j < movementsNodeList.getLength(); j++){
+                        Element movementElement = (Element) movementsNodeList.item(j);
 
                         // contruyo el movimiento con un builder a partir de los tgs obtenidos del XML
-                        Movimientos movimiento = Movimientos.builder()
-                                .codigoMovimiento(Integer.parseInt(elementMovimineto
+                        Movement newMovement = Movement.builder()
+                                .codigoMovimiento(Integer.parseInt(movementElement
                                         .getElementsByTagName("CodigoMovimiento")
                                         .item(0).getTextContent()))
-                                .concepto(elementMovimineto.getElementsByTagName("Concepto").item(0).getTextContent())
-                                .importe(Double.parseDouble(elementMovimineto
+                                .concepto(movementElement.getElementsByTagName("Concepto").item(0).getTextContent())
+                                .importe(Double.parseDouble(movementElement
                                         .getElementsByTagName("Importe")
                                         .item(0).getTextContent()))
-                                .saldoCtaCte(Double.parseDouble(elementMovimineto
+                                .saldoCtaCte(Double.parseDouble(movementElement
                                         .getElementsByTagName("SaldoCtaCte")
                                         .item(0).getTextContent()))
-                                .tipo(elementMovimineto.getElementsByTagName("Tipo").item(0).getTextContent())
+                                .tipo(movementElement.getElementsByTagName("Tipo").item(0).getTextContent())
                                 .build();
 
-                        movimiento.setEmpresa(newEmpresa);
-                        movimientos.add(movimiento);
+                        newMovement.setCompany(newCompany);
+                        movements.add(newMovement);
                     }
 
-                    newEmpresa.setMovimientos(movimientos);
-                    listaEmpresas.add(newEmpresa);
+                    newCompany.setMovements(movements);
+                    companiesList.add(newCompany);
 
                 }
             }
@@ -125,6 +125,6 @@ public class ReadXmlFile {
             throw new RuntimeException(e);
         }
 
-        return listaEmpresas;
+        return companiesList;
     }
 }

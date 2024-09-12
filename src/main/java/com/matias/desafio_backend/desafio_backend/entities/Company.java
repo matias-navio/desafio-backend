@@ -13,8 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "empresas")
-public class Empresa {
+@Table(name = "companies")
+public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,9 +31,9 @@ public class Empresa {
     private String productor;
     private String ciiu;
 
-    @OneToMany(mappedBy = "empresa",
+    @OneToMany(mappedBy = "company",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<Movimientos> movimientos;
+    private List<Movement> movements;
 
 }

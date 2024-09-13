@@ -33,7 +33,7 @@ public class ValidateCompanyData {
         return errors;
     }
 
-    private static String getTagValue(String tag, Element element) {
+    private String getTagValue(String tag, Element element) {
         NodeList nodeList = element.getElementsByTagName(tag);
         if (nodeList.getLength() > 0) {
             Node node = nodeList.item(0);

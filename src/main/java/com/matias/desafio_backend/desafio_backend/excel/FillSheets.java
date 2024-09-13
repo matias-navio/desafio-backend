@@ -43,17 +43,15 @@ public class FillSheets {
 
         // crea el header con los valores de la lista headers
         for (int i = 0; i < headers.length; i++) {
-
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
         }
 
         /*
-        * itera sobre la lista de empresas y crea una fila por cada una
-        * en la que completa con los datos obtenidos de la DB
+         * itera sobre la lista de empresas y crea una fila por cada una
+         * en la que completa con los datos obtenidos de la DB
         **/
         for (Company company : companies){
-
             Row row = companySheet.createRow(rowNum++);
             row.createCell(0).setCellValue(company.getNroContrato());
             row.createCell(1).setCellValue("'" + company.getCuit());
@@ -79,9 +77,9 @@ public class FillSheets {
     }
 
     /*
-    * Este metodo llena la hoja de Movimientos con los valores que se obtienen de la DB
-    *
-    * @Param movementSheet, hoja de movimientos donde se van a poblar los datos*/
+     * Este metodo llena la hoja de Movimientos con los valores que se obtienen de la DB
+     *
+     * @Param movementSheet, hoja de movimientos donde se van a poblar los datos*/
     public void fillMovementSheet(Sheet movementSheet){
 
         // lista de empresas de la DB
@@ -91,9 +89,9 @@ public class FillSheets {
         Row headerRow = movementSheet.createRow(rowNum++);
 
         /*
-        * Itero sobre las empresas para poder obetener los movimientos
-        * de cada una de ellas, y asi poder llenar la hoja de excel
-        * */
+         * Itero sobre las empresas para poder obetener los movimientos
+         * de cada una de ellas, y asi poder llenar la hoja de excel
+         * */
         for(Company company : companies){
 
             // devuelve todos los movimientos de la DB, obtenidos por el id de la empresa
@@ -110,8 +108,8 @@ public class FillSheets {
             }
 
             /* itera sobre la lista de movimientos y crea una fila por cada uno
-            * donde se llenaran con los valores obtenidos de la DB
-            * */
+             * donde se llenaran con los valores obtenidos de la DB
+             * */
             for(Movement movement : movements){
 
                 Row row = movementSheet.createRow(rowNum++);

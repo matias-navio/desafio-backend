@@ -5,7 +5,6 @@ import com.matias.desafio_backend.desafio_backend.entities.Movement;
 import com.matias.desafio_backend.desafio_backend.repositories.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,11 +30,12 @@ public class ReadXmlFile {
     private ValidateCompanyData validateCompanyData;
 
     /*
-    * Este metodo lee la ruta donde se encunetra el archivo XML y en base a eso
-    * ejecuta el metodo que crea y lee el archivo (createFile) y el metodo que
-    * guarda las empresas en la DB
-    *
-    * @Param filePath, es la ruta local donde esta el archivo XML */
+     * Este metodo lee la ruta donde se encunetra el archivo XML y en base a eso
+     * ejecuta el metodo que crea y lee el archivo (createFile) y el metodo que
+     * guarda las empresas en la DB
+     *
+     * @Param filePath, es la ruta local donde esta el archivo XML
+    */
     public void readAndSaveCompany(String filePath){
 
         List<Company> companies = createFile(filePath);
@@ -43,25 +43,27 @@ public class ReadXmlFile {
     }
 
     /*
-    * Este metodo obtiene la lista de empresas del archivo XML y las guarda en la DB
-    * validando que no existe mediante la direccion
-    *
-    * @Param companies, es la lista de empresas que llega del archivo*/
-    @Transactional
+     * Este metodo obtiene la lista de empresas del archivo XML y las guarda en la DB
+     * validando que no existe mediante la direccion
+     *
+     * @Param companies, es la lista de empresas que llega del archivo
+    */
     private void saveCompaniesInDatabase(List<Company> companies) {
 
         for (Company company : companies) {
 
-            if (companyRepository.findByDomicilio(company.getDomicilio()).isEmpty())
+            if(companyRepository.findByCuit(company.getCuit()).isEmpty())
                 companyRepository.save(company);
+
         }
     }
 
     /*
-    * Este metodo obtiene y lee el archivo XML, y en base a sus tags
-    * crea la lista de empresas y movimientos
-    *
-    * @Param filePath, es la ruta donde se encuentra el archivo que vamos a leer*/
+     * Este metodo obtiene y lee el archivo XML, y en base a sus tags
+     * crea la lista de empresas y movimientos
+     *
+     * @Param filePath, es la ruta donde se encuentra el archivo que vamos a leer
+    */
     private List<Company> createFile(String filePath){
 
         List<Company> companiesList = new ArrayList<>();
@@ -82,7 +84,7 @@ public class ReadXmlFile {
             // devuelve una lista con los nodos o tags que coincidan con Empresa
             NodeList nodeCompaniesList = documentXml.getElementsByTagName("Empresa");
 
-            List<String> errorMessages = new ArrayList<>();
+            List<String> errorsMessage = new ArrayList<>();
 
             // iteramos sobre la lista de empresas
             for (int i = 0; i < nodeCompaniesList.getLength(); i++){
@@ -95,13 +97,14 @@ public class ReadXmlFile {
 
                     // esto verifica si hay algun valor nulo que llegue del archivo XML y nos avisa
                     List<String> companyErrors = validateCompanyData.validateCompany(companyElement);
+
                     if (!companyErrors.isEmpty()) {
-                        errorMessages.add("Error en la empresa " + (i + 1) + ": " + String.join(", ", companyErrors));
+                        errorsMessage.add("Error en la empresa " + (i + 1) + ": " + String.join(", ", companyErrors));
                     }
 
                     // contruyo la empresa con un Builder a partir de los tags obtenidos en el XML
                     Company newCompany = Company.builder()
-                            .codigoPostal(Integer.parseInt(companyElement.getElementsByTagName("CodigoPostal")
+                            .codigoPostal(Integer.parseInt(companyElement.getElementsByTagName("NroContrato")
                                     .item(0).getTextContent()))
                             .domicilio(companyElement.getElementsByTagName("Domicilio")
                                     .item(0).getTextContent())
@@ -153,18 +156,18 @@ public class ReadXmlFile {
 
                     newCompany.setMovements(movements);
                     companiesList.add(newCompany);
+
                 }
             }
 
-            if (!errorMessages.isEmpty()) {
-                System.out.println("Validation Errors:");
-                for (String errorMessage : errorMessages) {
-                    System.out.println(errorMessage);
+            if (!errorsMessage.isEmpty()) {
+                System.out.println("Validacion de errores:");
+                for (String error : errorsMessage) {
+                    System.out.println(error);
                 }
             } else {
-                System.out.println("Todos los datos son validos");
+                System.out.println("Todos los valores son validos");
             }
-
         }catch (ParserConfigurationException | SAXException | IOException e) {
             System.out.println("Error: " + e.getMessage());
             throw new RuntimeException(e);
@@ -173,5 +176,4 @@ public class ReadXmlFile {
         // devuelve la lista de empresas para luego guardarlas en la DB
         return companiesList;
     }
-
 }

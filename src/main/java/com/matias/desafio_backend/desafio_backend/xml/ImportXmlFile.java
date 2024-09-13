@@ -20,7 +20,6 @@ public class ImportXmlFile implements CommandLineRunner {
 
         // metodo que lee las empresas obtenidas y las garda en la DB
         readXmlFile.readAndSaveCompany(filePah);
-        System.out.println("Empresas importadas desde el XML y guardadas en la base de datos.");
 
     }
 }

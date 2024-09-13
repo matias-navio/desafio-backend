@@ -6,6 +6,7 @@ import com.matias.desafio_backend.desafio_backend.repositories.CompanyRepository
 import com.matias.desafio_backend.desafio_backend.repositories.MovementsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,12 +20,14 @@ public class CompanyService {
     private MovementsRepository movementsRepository;
 
     // devueldo la lista  de todas las empreas
+    @Transactional(readOnly = true)
     public List<Company> findAll(){
 
         return (List<Company>) companyRepository.findAll();
     }
 
     // devuelve los movimientos de cada empresa dependiendo deL ID
+    @Transactional(readOnly = true)
     public List<Movement> getMovementsByCompanyId(Long companyId){
 
         return movementsRepository.findByCompanyId(companyId);

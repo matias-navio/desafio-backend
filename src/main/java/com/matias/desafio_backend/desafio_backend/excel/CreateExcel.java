@@ -22,7 +22,7 @@ public class CreateExcel implements CommandLineRunner {
          *
          * Con XSSWorkbook se crea con extencion xlsx
          * */
-        Workbook workbook = new XSSFWorkbook();
+        XSSFWorkbook workbook = new XSSFWorkbook();
 
         fillExcelFile.fillExcel(workbook);
 

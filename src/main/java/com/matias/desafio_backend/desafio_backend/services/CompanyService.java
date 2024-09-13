@@ -18,11 +18,13 @@ public class CompanyService {
     @Autowired
     private MovementsRepository movementsRepository;
 
+    // devueldo la lista  de todas las empreas
     public List<Company> findAll(){
 
         return (List<Company>) companyRepository.findAll();
     }
 
+    // devuelve los movimientos de cada empresa dependiendo deL ID
     public List<Movement> getMovementsByCompanyId(Long companyId){
 
         return movementsRepository.findByCompanyId(companyId);

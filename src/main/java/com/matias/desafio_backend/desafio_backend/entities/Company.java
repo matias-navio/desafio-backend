@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -24,12 +25,12 @@ public class Company {
     private String cuit;
     private String denominacion;
     private String domicilio;
-    private String codigoPostal;
-    private String fechaDesdeNov;
-    private String fechaHastaNov;
-    private String organizador;
-    private String productor;
-    private String ciiu;
+    private int codigoPostal;
+    private LocalDateTime fechaDesdeNov;
+    private LocalDateTime fechaHastaNov;
+    private int organizador;
+    private int productor;
+    private int ciiu;
 
     @OneToMany(mappedBy = "company",
             cascade = CascadeType.ALL,

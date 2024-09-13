@@ -25,7 +25,7 @@ public class FillExcelFile {
         Sheet movementsSheet = workbook.createSheet("Movimientos");
 
         // llamada al metodo que llena la hoja de las empresas
-        fillSheets.fillCompanySheet(companySheet);
+        fillSheets.fillCompanySheet(companySheet, workbook);
 
         // llamada al metodo que llena la hoja de movimientos
         fillSheets.fillMovementSheet(movementsSheet);
@@ -41,6 +41,4 @@ public class FillExcelFile {
             e.printStackTrace();
         }
     }
-
-
 }

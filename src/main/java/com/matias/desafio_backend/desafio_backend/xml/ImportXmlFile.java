@@ -15,8 +15,11 @@ public class ImportXmlFile implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        // ruta donde esta el archivo XML
         String filePah = "C:\\Users\\pc\\OneDrive\\Escritorio\\desafio-backend\\DesafioBackend.xml";
-        readXmlFile.readAndSveCompany(filePah);
+
+        // metodo que lee las empresas obtenidas y las garda en la DB
+        readXmlFile.readAndSaveCompany(filePah);
         System.out.println("Empresas importadas desde el XML y guardadas en la base de datos.");
 
     }

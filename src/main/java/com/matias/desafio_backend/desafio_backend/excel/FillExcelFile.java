@@ -28,7 +28,7 @@ public class FillExcelFile {
         fillSheets.fillCompanySheet(companySheet, workbook);
 
         // llamada al metodo que llena la hoja de movimientos
-        fillSheets.fillMovementSheet(movementsSheet);
+        fillSheets.fillMovementSheet(movementsSheet, workbook);
 
         try {
 

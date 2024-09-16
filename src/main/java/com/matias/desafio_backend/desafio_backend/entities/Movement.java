@@ -24,8 +24,8 @@ public class Movement {
     private String concepto;
     private double importe;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id")
+    @ManyToOne
+    @JoinColumn(name = "nro_contrato")
     private Company company;
 
 }

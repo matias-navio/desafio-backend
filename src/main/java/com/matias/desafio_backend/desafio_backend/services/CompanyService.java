@@ -20,16 +20,16 @@ public class CompanyService {
     private MovementsRepository movementsRepository;
 
     // devueldo la lista  de todas las empreas
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Company> findAll(){
 
         return (List<Company>) companyRepository.findAll();
     }
 
     // devuelve los movimientos de cada empresa dependiendo deL ID
-    @Transactional(readOnly = true)
-    public List<Movement> getMovementsByCompanyId(Long companyId){
+    @Transactional
+    public List<Movement> getMovementsByCompanyId(Long nroContrato){
 
-        return movementsRepository.findByCompanyId(companyId);
+        return movementsRepository.findByCompanyNroContrato(nroContrato);
     }
 }

@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface CompanyRepository extends CrudRepository<Company, Long> {
 
-    Optional<Company> findByCuit(String cuit);
+    Optional<Company> findByNroContrato(Long nroContrato);
 }

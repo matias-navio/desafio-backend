@@ -19,9 +19,8 @@ public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long nroContrato;
 
-    private int nroContrato;
     private String cuit;
     private String denominacion;
     private String domicilio;
@@ -29,11 +28,12 @@ public class Company {
     private LocalDateTime fechaDesdeNov;
     private LocalDateTime fechaHastaNov;
     private int organizador;
-    private int productor;
+    private String productor;
     private int ciiu;
 
     @OneToMany(mappedBy = "company",
             cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
             orphanRemoval = true)
     private List<Movement> movements;
 

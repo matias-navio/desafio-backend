@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface MovementsRepository extends CrudRepository<Movement, Long> {
 
-    List<Movement> findByCompanyId(Long companyId);
+    List<Movement> findByCompanyNroContrato(Long companyId);
 }

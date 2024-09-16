@@ -5,6 +5,7 @@ import com.matias.desafio_backend.desafio_backend.entities.Movement;
 import com.matias.desafio_backend.desafio_backend.repositories.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ReadXmlFile {
@@ -28,6 +30,9 @@ public class ReadXmlFile {
 
     @Autowired
     private ValidateCompanyData validateCompanyData;
+
+    @Autowired
+    private ValidateMovements validateMovements;
 
     /*
      * Este metodo lee la ruta donde se encunetra el archivo XML y en base a eso
@@ -48,13 +53,38 @@ public class ReadXmlFile {
      *
      * @Param companies, es la lista de empresas que llega del archivo
     */
+    @Transactional
     private void saveCompaniesInDatabase(List<Company> companies) {
 
-        for (Company company : companies) {
+        for (Company companyFromXml : companies) {
 
-            if(companyRepository.findByCuit(company.getCuit()).isEmpty())
-                companyRepository.save(company);
+            Optional<Company> optionalCompany = companyRepository
+                    .findByNroContrato(companyFromXml.getNroContrato());
 
+            if(optionalCompany.isPresent()){
+
+                Company existingCompany  = optionalCompany.get();
+
+                // Actualiza los campos que necesites (todos o algunos)
+                existingCompany.setDenominacion(companyFromXml.getDenominacion());
+                existingCompany.setDomicilio(companyFromXml.getDomicilio());
+                existingCompany.setCiiu(companyFromXml.getCiiu());
+                existingCompany.setFechaHastaNov(companyFromXml.getFechaHastaNov());
+                existingCompany.setFechaDesdeNov(companyFromXml.getFechaDesdeNov());
+                existingCompany.setProductor(companyFromXml.getProductor());
+                existingCompany.setOrganizador(companyFromXml.getOrganizador());
+                existingCompany.setNroContrato(companyFromXml.getNroContrato());
+
+                if (!companyFromXml.getMovements().isEmpty()) {
+                    existingCompany.getMovements().clear();
+                    existingCompany.getMovements().addAll(companyFromXml.getMovements());
+                }
+
+                companyRepository.save(existingCompany);
+            }else {
+
+                companyRepository.save(companyFromXml);
+            }
         }
     }
 
@@ -67,6 +97,7 @@ public class ReadXmlFile {
     private List<Company> createFile(String filePath){
 
         List<Company> companiesList = new ArrayList<>();
+        List<String> errorsMessage = new ArrayList<>();
 
         try {
 
@@ -84,8 +115,6 @@ public class ReadXmlFile {
             // devuelve una lista con los nodos o tags que coincidan con Empresa
             NodeList nodeCompaniesList = documentXml.getElementsByTagName("Empresa");
 
-            List<String> errorsMessage = new ArrayList<>();
-
             // iteramos sobre la lista de empresas
             for (int i = 0; i < nodeCompaniesList.getLength(); i++){
 
@@ -95,16 +124,16 @@ public class ReadXmlFile {
                 if(nodeCompany.getNodeType() == Node.ELEMENT_NODE){
                     Element companyElement = (Element) nodeCompany;
 
-                    // esto verifica si hay algun valor nulo que llegue del archivo XML y nos avisa
+                    // Validación de empresa
                     List<String> companyErrors = validateCompanyData.validateCompany(companyElement);
-
                     if (!companyErrors.isEmpty()) {
                         errorsMessage.add("Error en la empresa " + (i + 1) + ": " + String.join(", ", companyErrors));
+                        continue;
                     }
 
                     // contruyo la empresa con un Builder a partir de los tags obtenidos en el XML
                     Company newCompany = Company.builder()
-                            .codigoPostal(Integer.parseInt(companyElement.getElementsByTagName("NroContrato")
+                            .nroContrato(Long.parseLong(companyElement.getElementsByTagName("NroContrato")
                                     .item(0).getTextContent()))
                             .domicilio(companyElement.getElementsByTagName("Domicilio")
                                     .item(0).getTextContent())
@@ -120,9 +149,9 @@ public class ReadXmlFile {
                                     .item(0).getTextContent()))
                             .denominacion(companyElement.getElementsByTagName("Denominacion")
                                     .item(0).getTextContent())
-                            .productor(Integer.parseInt(companyElement.getElementsByTagName("Productor")
-                                    .item(0).getTextContent()))
-                            .nroContrato(Integer.parseInt(companyElement.getElementsByTagName("NroContrato")
+                            .productor(companyElement.getElementsByTagName("Productor")
+                                    .item(0).getTextContent())
+                            .codigoPostal(Integer.parseInt(companyElement.getElementsByTagName("CodigoPostal")
                                     .item(0).getTextContent()))
                             .build();
 
@@ -134,6 +163,13 @@ public class ReadXmlFile {
                     // itero sobre la lista de movimientos
                     for(int j = 0; j < movementsNodeList.getLength(); j++){
                         Element movementElement = (Element) movementsNodeList.item(j);
+
+                        // Validar movimiento
+                        List<String> movementsErrors = validateMovements.validateMovements(movementElement);
+                        if (!movementsErrors.isEmpty()) {
+                            errorsMessage.add("Error en el movimiento de la empresa " + (i + 1) + ": " + String.join(", ", movementsErrors));
+                            continue; // Saltar este movimiento en caso de errores
+                        }
 
                         // contruyo el movimiento con un builder a partir de los tgs obtenidos del XML
                         Movement newMovement = Movement.builder()
@@ -161,13 +197,14 @@ public class ReadXmlFile {
             }
 
             if (!errorsMessage.isEmpty()) {
-                System.out.println("Validacion de errores:");
+                System.out.println("Validación de errores:");
                 for (String error : errorsMessage) {
                     System.out.println(error);
                 }
             } else {
-                System.out.println("Todos los valores son validos");
+                System.out.println("Todos los valores son válidos.");
             }
+
         }catch (ParserConfigurationException | SAXException | IOException e) {
             System.out.println("Error: " + e.getMessage());
             throw new RuntimeException(e);

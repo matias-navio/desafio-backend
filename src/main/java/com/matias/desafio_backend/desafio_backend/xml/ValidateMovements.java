@@ -8,30 +8,29 @@ import org.w3c.dom.NodeList;
 import java.util.ArrayList;
 import java.util.List;
 
-// esta clase tiene como finalidad validar que company no tenga errores en sus tags
+// clase que tiene como finalidad, validar que los tags de movimiento no tengan errores
 @Component
-public class ValidateCompanyData {
+public class ValidateMovements {
 
-    // lista con los tags de company
+    // lista con los tags de movimiento
     private static final String[] REQUIRED_TAGS = {
-            "CUIT", "NroContrato", "Denominacion", "Domicilio",
-            "CodigoPostal", "FechaDesdeNov", "FechaHastaNov",
-            "Organizador", "Productor", "CIIU"
+            "SaldoCtaCte", "Tipo", "CodigoMovimiento", "Concepto",
+            "Importe"
     };
 
     /*
-     * Metodo que recorre la lista de tags y verifica si alguno falta o si
-     * alguno tiene valores nulos
-     *
-     * @Param company, es el Element que recibimos a la hora de leeer el XML
-     * con los nodos
-     * */
-    public List<String> validateCompany(Element company){
+    * Metodo que recorre la lista de tags y verifica si alguno falta o si
+    * alguno tiene valores nulos
+    *
+    * @Param movement, es el Element que recibimos a la hora de leeer el XML
+    * con los nodos
+    * */
+    public List<String> validateMovements(Element movement){
 
         List<String> errors = new ArrayList<>();
 
         for (String tag : REQUIRED_TAGS) {
-            String value = getTagValue(tag, company);
+            String value = getTagValue(tag, movement);
             if (value == null) {
                 errors.add("Falta la etiqueta: <" + tag + ">");
             } else if (value.trim().isEmpty()) {
@@ -42,12 +41,6 @@ public class ValidateCompanyData {
         return errors;
     }
 
-    /*
-    * Este metodo sirve para interpretar los tags del XML y validar que luego que no sean nulos
-    *
-    * @Param tag, es el nombre del tag
-    * @Param element, es el elemnto nodo
-    * */
     private String getTagValue(String tag, Element element) {
         NodeList nodeList = element.getElementsByTagName(tag);
         if (nodeList.getLength() > 0) {

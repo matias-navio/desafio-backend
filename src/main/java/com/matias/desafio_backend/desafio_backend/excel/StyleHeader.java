@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StyleHeader {
 
+    // metodo que recibe el libro y da estilos a la cabecera de las hojas
     public CellStyle styleHeaderCell(Workbook workbook){
 
         // doy formato de fecha a las celdas de tipo fecha

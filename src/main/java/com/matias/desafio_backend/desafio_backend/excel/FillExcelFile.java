@@ -24,11 +24,8 @@ public class FillExcelFile {
         Sheet companySheet = workbook.createSheet("Empresas");
         Sheet movementsSheet = workbook.createSheet("Movimientos");
 
-        // llamada al metodo que llena la hoja de las empresas
-        fillSheets.fillCompanySheet(companySheet, workbook);
-
-        // llamada al metodo que llena la hoja de movimientos
-        fillSheets.fillMovementSheet(movementsSheet, workbook);
+        // metodo que llena las hojas Empresas y Movimientos
+        fillSheets.fillSheets(companySheet, movementsSheet, workbook);
 
         try {
 

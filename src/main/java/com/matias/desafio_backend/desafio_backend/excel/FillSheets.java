@@ -14,27 +14,44 @@ import java.util.List;
 @Component
 public class FillSheets {
 
+    // inyeccion del servicio de empresa
     @Autowired
     private CompanyService companyService;
 
+    // inyeccion de los estilos para las celdas
     @Autowired
     private StyleHeader styleHeader;
 
+    // inyeccion para obtener el XML de empresas
     @Autowired
-    ReadXmlFile readXmlFile;
+    private ReadXmlFile readXmlFile;
+
+    /*
+     * Método que llena ambas hojas de la empresa y los movimientos.
+     * Esto asegura que solo se lea el archivo XML una vez.
+     *
+     * @Param companySheet, es la hoja de las empresas la cual se llena con los campos de Company
+     * @Param movementSheet, es la hoja de los movimientos la cual se llena con los datos de Movement
+     */
+    public void fillSheets(Sheet companySheet, Sheet movementSheet, Workbook workbook) {
+
+        // utiliza la ruta para acceder al archivo XML y con el metodo creteFile hace el resto
+        String path = "C:\\Users\\pc\\OneDrive\\Escritorio\\desafio-backend\\DesafioBackend.xml";
+
+        // Lista de empresas obtenida del XML (solo se lee una vez)
+        List<Company> companies = readXmlFile.createFile(path);
+
+        // llena las hojas del archivo excel
+        fillCompanySheet(companies, companySheet, workbook);
+        fillMovementSheet(companies, movementSheet, workbook);
+    }
 
     /*
      * Metodo que obtiene los datos de las empresas de la base de datos
      * para poder pasarlos al archivo excel
      *
      * @Param companySheet, es la hoja de las empresas la cual se llena con los campos de Company*/
-    public void fillCompanySheet(Sheet companySheet, Workbook workbook){
-
-        // con esto permito darte formato y tipo de dato a las celdas
-        DataFormat format = workbook.createDataFormat();
-
-        // lista de empresas obtenida de la DB
-        List<Company> companies = readXmlFile.createFile();
+    public void fillCompanySheet(List<Company> companies, Sheet companySheet, Workbook workbook){
 
         int rowNum = 0;
         Row headerRow = companySheet.createRow(rowNum++);
@@ -72,14 +89,12 @@ public class FillSheets {
      * Este metodo llena la hoja de Movimientos con los valores que se obtienen de la DB
      *
      * @Param movementSheet, hoja de movimientos donde se van a poblar los datos*/
-    public void fillMovementSheet(Sheet movementSheet, Workbook workbook){
-
-        // lista de empresas de la DB
-        List<Company> companies = companyService.findAll();
+    public void fillMovementSheet(List<Company> companies, Sheet movementSheet, Workbook workbook){
 
         int rowNum = 0;
         Row headerRow = movementSheet.createRow(rowNum++);
 
+        // esto lo que hace es darle estilo a las celdas que van a ser hipervinculos
         CreationHelper creationHelper = workbook.getCreationHelper();
         CellStyle hlinkStyle = workbook.createCellStyle();
         Font hlinkFont = workbook.createFont();
@@ -99,11 +114,13 @@ public class FillSheets {
             // lista con los datos de los movimientos, para poder hacer el header
             String[] headers = {"Nro Contrato", "Saldo Cta. Cte.", "Concepto", "Importe"};
 
+            // itera sobre los headers de movimiento, le asigna estilos
             for(int i = 0; i < headers.length; i++){
 
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
                 cell.setCellStyle(styleHeader.styleHeaderCell(workbook));
+                movementSheet.autoSizeColumn(i);
             }
 
             /* itera sobre la lista de movimientos y crea una fila por cada uno
@@ -113,12 +130,12 @@ public class FillSheets {
 
                 Row row = movementSheet.createRow(rowNum++);
 
+                // a las celdas de la columna 0 las crea como hipervinculo
                 Cell cell0 = row.createCell(0);
                 cell0.setCellValue(movement.getCompany().getNroContrato());
-
                 Hyperlink hyperlink = creationHelper.createHyperlink(HyperlinkType.DOCUMENT);
-                // Suponiendo que la celda de destino en la hoja "Empresas" es A1,
-                // deberás calcular la celda correcta en función del número de contrato.
+
+                // se vinculan con la hoja empresas en este caso la columna A donde esta el NroContrato
                 String address = "'Empresas'!A" + ((company.getNroContrato()) + 1);
                 hyperlink.setAddress(address);
                 cell0.setHyperlink(hyperlink);

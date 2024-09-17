@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class CompanyService {
+public class CompanyService implements ICompanyService{
 
     @Autowired
     private CompanyRepository companyRepository;
@@ -24,6 +24,14 @@ public class CompanyService {
     public List<Company> findAll(){
 
         return (List<Company>) companyRepository.findAll();
+    }
+
+    @Override
+    public Company findByNroContrato(Long nroContrato) {
+
+        // aca se puede hacer una excepcion personalizada para que devuelva un error mas amigable
+        return companyRepository.findByNroContrato(nroContrato)
+                .orElseThrow(() -> new RuntimeException("No se encontró la empresa"));
     }
 
     // devuelve los movimientos de cada empresa dependiendo deL ID

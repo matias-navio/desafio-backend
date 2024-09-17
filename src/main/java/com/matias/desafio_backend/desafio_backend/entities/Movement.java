@@ -1,5 +1,6 @@
 package com.matias.desafio_backend.desafio_backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,7 @@ public class Movement {
 
     @ManyToOne
     @JoinColumn(name = "nro_contrato")
+    @JsonIgnore
     private Company company;
 
 }

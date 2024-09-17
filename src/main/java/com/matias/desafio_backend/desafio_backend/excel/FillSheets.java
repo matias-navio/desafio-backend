@@ -3,6 +3,7 @@ package com.matias.desafio_backend.desafio_backend.excel;
 import com.matias.desafio_backend.desafio_backend.entities.Company;
 import com.matias.desafio_backend.desafio_backend.entities.Movement;
 import com.matias.desafio_backend.desafio_backend.services.CompanyService;
+import com.matias.desafio_backend.desafio_backend.xml.ReadXmlFile;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,12 @@ public class FillSheets {
     @Autowired
     private CompanyService companyService;
 
+    @Autowired
+    private StyleHeader styleHeader;
+
+    @Autowired
+    ReadXmlFile readXmlFile;
+
     /*
      * Metodo que obtiene los datos de las empresas de la base de datos
      * para poder pasarlos al archivo excel
@@ -26,12 +33,8 @@ public class FillSheets {
         // con esto permito darte formato y tipo de dato a las celdas
         DataFormat format = workbook.createDataFormat();
 
-        // doy formato de fecha a las celdas de tipo fecha
-        CellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
-
         // lista de empresas obtenida de la DB
-        List<Company> companies = companyService.findAll();
+        List<Company> companies = readXmlFile.createFile();
 
         int rowNum = 0;
         Row headerRow = companySheet.createRow(rowNum++);
@@ -42,9 +45,11 @@ public class FillSheets {
 
         // crea el header con los valores de la lista headers
         for (int i = 0; i < headers.length; i++) {
+
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
-            cell.setCellStyle(cellStyle);
+            cell.setCellStyle(styleHeader.styleHeaderCell(workbook));
+            companySheet.autoSizeColumn(i);
         }
 
         /*
@@ -52,6 +57,7 @@ public class FillSheets {
          * en la que completa con los datos obtenidos de la DB
         **/
         for (Company company : companies){
+
             Row row = companySheet.createRow(rowNum++);
             row.createCell(0).setCellValue(company.getNroContrato());
             row.createCell(1).setCellValue("'" + company.getCuit());
@@ -97,6 +103,7 @@ public class FillSheets {
 
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
+                cell.setCellStyle(styleHeader.styleHeaderCell(workbook));
             }
 
             /* itera sobre la lista de movimientos y crea una fila por cada uno

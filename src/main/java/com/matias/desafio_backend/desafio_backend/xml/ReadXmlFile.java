@@ -2,10 +2,8 @@ package com.matias.desafio_backend.desafio_backend.xml;
 
 import com.matias.desafio_backend.desafio_backend.entities.Company;
 import com.matias.desafio_backend.desafio_backend.entities.Movement;
-import com.matias.desafio_backend.desafio_backend.repositories.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -15,18 +13,14 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class ReadXmlFile {
-
-    @Autowired
-    private CompanyRepository companyRepository;
 
     @Autowired
     private ValidateCompanyData validateCompanyData;
@@ -35,78 +29,20 @@ public class ReadXmlFile {
     private ValidateMovements validateMovements;
 
     /*
-     * Este metodo lee la ruta donde se encunetra el archivo XML y en base a eso
-     * ejecuta el metodo que crea y lee el archivo (createFile) y el metodo que
-     * guarda las empresas en la DB
-     *
-     * @Param filePath, es la ruta local donde esta el archivo XML
-    */
-    public void readAndSaveCompany(String filePath){
-
-        List<Company> companies = createFile(filePath);
-        saveCompaniesInDatabase(companies);
-    }
-
-    /*
-     * Este metodo obtiene la lista de empresas del archivo XML y las guarda en la DB
-     * validando que no existe mediante el NroContrato
-     *
-     * @Param companies, es la lista de empresas que llega del archivo
-    */
-    @Transactional
-    private void saveCompaniesInDatabase(List<Company> companies) {
-
-        for (Company companyFromXml : companies) {
-
-            Optional<Company> optionalCompany = companyRepository
-                    .findByNroContrato(companyFromXml.getNroContrato());
-
-            if(optionalCompany.isPresent()){
-
-                Company existingCompany = optionalCompany.get();
-
-                // Actualiza los campos que necesites (todos o algunos)
-                existingCompany.setDenominacion(companyFromXml.getDenominacion());
-                existingCompany.setDomicilio(companyFromXml.getDomicilio());
-                existingCompany.setCiiu(companyFromXml.getCiiu());
-                existingCompany.setFechaHastaNov(companyFromXml.getFechaHastaNov());
-                existingCompany.setFechaDesdeNov(companyFromXml.getFechaDesdeNov());
-                existingCompany.setProductor(companyFromXml.getProductor());
-                existingCompany.setOrganizador(companyFromXml.getOrganizador());
-                existingCompany.setNroContrato(companyFromXml.getNroContrato());
-                existingCompany.setCodigoPostal(companyFromXml.getCodigoPostal());
-
-                if (companyFromXml.getMovements().isEmpty()) {
-                    existingCompany.getMovements().addAll(companyFromXml.getMovements());
-                }
-
-                companyRepository.save(existingCompany);
-            }else {
-
-                companyRepository.save(companyFromXml);
-            }
-        }
-    }
-
-    /*
-     * Este metodo obtiene y lee el archivo XML, y en base a sus tags
-     * crea las tablas en la DB con otro metodo
+     * Este metodo obtiene y lee el archivo XML
      *
      * @Param filePath, es la ruta donde se encuentra el archivo que vamos a leer
     */
-    public List<Company> createFile(String filePath){
+    public List<Company> createFile(InputStream inputStream){
 
         List<Company> companies;
 
         try {
 
-            // creamos una nueva instancia de archivo con la ruta obtenida en filePath
-            File fileXml = new File(filePath);
-
             // esto nos permite leer y analizar archivos de tipo XML
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-            Document documentXml = builder.parse(fileXml);
+            Document documentXml = builder.parse(inputStream);
 
             // esto verifica que no haya inconsistencias en el archivo XML
             documentXml.getDocumentElement().normalize();

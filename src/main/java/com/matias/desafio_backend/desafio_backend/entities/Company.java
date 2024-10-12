@@ -1,6 +1,5 @@
 package com.matias.desafio_backend.desafio_backend.entities;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,12 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "companies")
 public class Company {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long nroContrato;
 
     private String cuit;
@@ -31,10 +26,6 @@ public class Company {
     private String productor;
     private int ciiu;
 
-    @OneToMany(mappedBy = "company",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER,
-            orphanRemoval = true)
     private List<Movement> movements;
 
 }

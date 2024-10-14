@@ -104,8 +104,8 @@ public class ReadXmlFile {
                                 .item(0).getTextContent()))
                         .denominacion(companyElement.getElementsByTagName("Denominacion")
                                 .item(0).getTextContent())
-                        .productor(companyElement.getElementsByTagName("Productor")
-                                .item(0).getTextContent())
+                        .productor(Integer.parseInt(companyElement.getElementsByTagName("Productor")
+                                .item(0).getTextContent()))
                         .codigoPostal(Integer.parseInt(companyElement.getElementsByTagName("CodigoPostal")
                                 .item(0).getTextContent()))
                         .build();

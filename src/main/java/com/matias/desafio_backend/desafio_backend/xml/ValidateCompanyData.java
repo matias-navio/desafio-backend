@@ -31,11 +31,17 @@ public class ValidateCompanyData {
         List<String> errors = new ArrayList<>();
 
         for (String tag : REQUIRED_TAGS) {
-            String value = getTagValue(tag, company);
-            if (value == null) {
-                errors.add("Falta la etiqueta: <" + tag + ">");
-            } else if (value.trim().isEmpty()) {
-                errors.add("El valor de la etiqueta <" + tag + "> está vacío");
+            try {
+                String value = getTagValue(tag, company);
+
+                // Si la etiqueta no existe o el valor es nulo
+                if (value == null) {
+                    errors.add("Falta la etiqueta: <" + tag + ">");
+                } else if (value.trim().isEmpty()) {
+                    errors.add("El valor de la etiqueta <" + tag + "> está vacío");
+                }
+            } catch (Exception e) {
+                errors.add("Error al procesar la etiqueta: <" + tag + "> - " + e.getMessage());
             }
         }
 
@@ -50,12 +56,16 @@ public class ValidateCompanyData {
     * */
     private String getTagValue(String tag, Element element) {
         NodeList nodeList = element.getElementsByTagName(tag);
-        if (nodeList.getLength() > 0) {
-            Node node = nodeList.item(0);
-            if (node != null && node.getFirstChild() != null) {
-                return node.getFirstChild().getNodeValue();
-            }
+        if (nodeList.getLength() == 0) {
+            // Si la etiqueta no existe en absoluto
+            return null;
+        }
+
+        Node node = nodeList.item(0);
+        if (node != null && node.getFirstChild() != null) {
+            return node.getFirstChild().getNodeValue();
         }
         return null;
+
     }
 }

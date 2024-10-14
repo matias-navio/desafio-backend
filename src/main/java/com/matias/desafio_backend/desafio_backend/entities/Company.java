@@ -23,7 +23,7 @@ public class Company {
     private LocalDateTime fechaDesdeNov;
     private LocalDateTime fechaHastaNov;
     private int organizador;
-    private String productor;
+    private int productor;
     private int ciiu;
 
     private List<Movement> movements;

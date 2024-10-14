@@ -2,6 +2,7 @@ package com.matias.desafio_backend.desafio_backend.excel;
 
 import com.matias.desafio_backend.desafio_backend.entities.Company;
 import com.matias.desafio_backend.desafio_backend.entities.Movement;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,7 +34,7 @@ public class FillExcelFile {
 
         // llanemos las dos hojas con los datos del XML
         fillCompanySheet(companySheet, companies, workbook);
-        fillMovementSheet(movementsSheet, companies);
+        fillMovementSheet(movementsSheet, companies, workbook);
 
         try{
 
@@ -86,7 +87,7 @@ public class FillExcelFile {
         for (Company company : companies) {
             Row row = companySheet.createRow(rowNum++);
             row.createCell(0).setCellValue(company.getNroContrato());
-            row.createCell(1).setCellValue(company.getCuit());
+            row.createCell(1).setCellValue("'" + company.getCuit());
             row.createCell(2).setCellValue(company.getDenominacion());
             row.createCell(3).setCellValue(company.getDomicilio());
             row.createCell(4).setCellValue(company.getCodigoPostal());
@@ -94,22 +95,58 @@ public class FillExcelFile {
         }
     }
 
-    public void fillMovementSheet(Sheet movementSheet, List<Company> companies){
+    public void fillMovementSheet(Sheet movementSheet, List<Company> companies, Workbook workbook){
 
-        Row headerRow = movementSheet.createRow(0);
-        headerRow.createCell(0).setCellValue("NroContrato");
-        headerRow.createCell(1).setCellValue("SaldoCtaCte");
-        headerRow.createCell(2).setCellValue("Concepto");
-        headerRow.createCell(3).setCellValue("Importe");
 
-        int rowNum = 1;
+        int rowNum = 0;
+        // crea la cabecera para la hoja de Empresas
+        Row headerRowMovement = movementSheet.createRow(rowNum++);
+
+        // esto establece un hipervinculo que luego usaremos en la tabla y sus estilos
+        CreationHelper creationHelper = workbook.getCreationHelper();
+        CellStyle hlinkStyle = workbook.createCellStyle();
+        Font hlinkFont = workbook.createFont();
+        hlinkFont.setUnderline(Font.U_SINGLE);
+        hlinkFont.setColor(IndexedColors.BLUE.getIndex());
+        hlinkStyle.setFont(hlinkFont);
+
+        /*
+         * Itero sobre las empresas para poder obetener los movimientos
+         * de cada una de ellas, y asi poder llenar la hoja de excel
+        */
         for (Company company : companies){
 
             List<Movement> movements = company.getMovements();
 
+            // lista con los valores de la cabecera
+            String[] movementHeader = {"Nro Contrato", "SaldoCtaCte", "Concepto", "Importe"};
+
+            for (int i = 0; i < movementHeader.length; i++) {
+
+                Cell cell = headerRowMovement.createCell(i);
+                cell.setCellValue(movementHeader[i]);
+                cell.setCellStyle(styleHeader.styleHeaderCell(workbook));
+                movementSheet.autoSizeColumn(i);
+            }
+
+            /* itera sobre la lista de movimientos y crea una fila por cada uno
+             * donde se llenaran con los valores obtenidos de la DB
+            */
             for (Movement movement : movements) {
+
                 Row row = movementSheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(company.getNroContrato());
+
+                // a las celdas de la columna 0 las crea como hipervinculo
+                Cell cell0 = row.createCell(0);
+                cell0.setCellValue(movement.getCompany().getNroContrato());
+                Hyperlink hyperlink = creationHelper.createHyperlink(HyperlinkType.DOCUMENT);
+
+                // se vinculan con la hoja empresas en este caso la columna A donde esta el NroContrato
+                String address = "'Empresas'!A" + ((company.getNroContrato()) + 1);
+                hyperlink.setAddress(address);
+                cell0.setHyperlink(hyperlink);
+                cell0.setCellStyle(hlinkStyle);
+
                 row.createCell(1).setCellValue(movement.getSaldoCtaCte());
                 row.createCell(2).setCellValue(movement.getConcepto());
                 row.createCell(3).setCellValue(movement.getImporte());

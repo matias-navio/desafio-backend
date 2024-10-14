@@ -1,4 +1,3 @@
-![image](https://github.com/user-attachments/assets/0e21bf29-617c-4d4d-8582-8364797e436c)## Desafio de backend 
 
 Este proyecto consistió en la creación de un pequeño servico REST que nos permite enviarle un archivo XML con una lista de empresas y nos devuelve un archivo Excel generado a partir del XML con la información de las empresas y sus movimientos.
 
@@ -19,6 +18,8 @@ Como se debe configurar:
 - En la key del valor porer 'file' y que sea de tipo file, no text.
 - En value cargar el archivo DesafioBackend.xml.
 - Ejecutarlo.
+
+  ![image](https://github.com/user-attachments/assets/561138b3-209e-45f6-9762-6b6ff777c5eb)
 
 Al ejecutarlo debería crearse el libro de excel en la ruta de las DESCARGAS de tu computadora.
 

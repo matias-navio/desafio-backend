@@ -18,36 +18,53 @@ public class ValidateMovements {
             "Importe"
     };
 
-    /*
+    /**
     * Metodo que recorre la lista de tags y verifica si alguno falta o si
     * alguno tiene valores nulos
     *
-    * @Param movement, es el Element que recibimos a la hora de leeer el XML
+    * @param movement, es el Element que recibimos a la hora de leeer el XML
     * con los nodos
+     * @return errors, devuelve una lista de String con los errores encontrados
     * */
     public List<String> validateMovements(Element movement){
 
         List<String> errors = new ArrayList<>();
 
         for (String tag : REQUIRED_TAGS) {
-            String value = getTagValue(tag, movement);
-            if (value == null) {
-                errors.add("Falta la etiqueta: <" + tag + ">");
-            } else if (value.trim().isEmpty()) {
-                errors.add("El valor de la etiqueta <" + tag + "> está vacío");
+            try {
+                String value = getTagValue(tag, movement);
+
+                // Si la etiqueta no existe o el valor es nulo
+                if (value == null) {
+                    errors.add("Falta la etiqueta: <" + tag + ">");
+                } else if (value.trim().isEmpty()) {
+                    errors.add("El valor de la etiqueta <" + tag + "> está vacío");
+                }
+            } catch (Exception e) {
+                errors.add("Error al procesar la etiqueta: <" + tag + "> - " + e.getMessage());
             }
         }
 
         return errors;
     }
 
+    /**
+     * Este metodo sirve para interpretar los tags del XML y validar que luego que no sean nulos
+     *
+     * @param tag, es el nombre del tag
+     * @param element, es el elemnto nodo
+     * @return deveria devolver un String con el nombre de una nodo
+     * */
     private String getTagValue(String tag, Element element) {
         NodeList nodeList = element.getElementsByTagName(tag);
-        if (nodeList.getLength() > 0) {
-            Node node = nodeList.item(0);
-            if (node != null && node.getFirstChild() != null) {
-                return node.getFirstChild().getNodeValue();
-            }
+        if (nodeList.getLength() == 0) {
+            // Si la etiqueta no existe en absoluto
+            return null;
+        }
+
+        Node node = nodeList.item(0);
+        if (node != null && node.getFirstChild() != null) {
+            return node.getFirstChild().getNodeValue();
         }
         return null;
     }

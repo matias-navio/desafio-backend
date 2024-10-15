@@ -57,12 +57,13 @@ public class FillExcelFile {
         }
     }
 
-    /*
+    /**
     * Este metodo llena la hoja Empresas con la información obtenida del archivo XML que se le envia
     * Crea el encabezado con el nombre de los campos y las filas con los datos
     *
-    * @Param companySheet, es un paramatro de tipo Sheet que lee la hoja que se envia para llenar
-    * @Param companies, es la lista de empresas obtenida del XML
+    * @param companySheet, es un paramatro de tipo Sheet que lee la hoja que se envia para llenar
+    * @param companies, es la lista de empresas obtenida del XML
+    * @param workbook, este parametro lo usamos unicamente para el estilo de las celdas
     */
     private void fillCompanySheet(Sheet companySheet, List<Company> companies, Workbook workbook){
 
@@ -95,6 +96,14 @@ public class FillExcelFile {
         }
     }
 
+    /**
+     * Este metodo llena la hoja de movimientos con la informacion obtenida
+     * a traves del objeto Empresa
+     *
+     * @param movementSheet, es la hoja de movimientos del libro excel
+     * @param companies, lista de empresas para obtener los movimientos
+     * @param workbook, lo usamos para los estilos
+     * */
     public void fillMovementSheet(Sheet movementSheet, List<Company> companies, Workbook workbook){
 
 

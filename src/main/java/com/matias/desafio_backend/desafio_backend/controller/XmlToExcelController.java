@@ -2,12 +2,10 @@ package com.matias.desafio_backend.desafio_backend.controller;
 
 import com.matias.desafio_backend.desafio_backend.entities.Company;
 import com.matias.desafio_backend.desafio_backend.excel.FillExcelFile;
-import com.matias.desafio_backend.desafio_backend.excel.StyleHeader;
 import com.matias.desafio_backend.desafio_backend.xml.ReadXmlFile;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+/*
+* Esta clase tiene como finalidad definir un endpoint para poder leer un archivo
+* XML y retornar un libro de excel que se aloja en las descargas
+* */
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -25,6 +27,11 @@ public class XmlToExcelController {
     private final ReadXmlFile readXmlFile;
     private final FillExcelFile fillExcelFile;
 
+    /**
+     * Metodo para crear el endpoint que se va a consumir para que nos devuelva el libro de excel
+     *
+     * @param file, este parametro representa los archivos que se pueden enviar en la consulta
+     **/
     @PostMapping(value = "/convert-xml-to-excel", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<byte[]> convertXmlToExcel(@RequestParam("file") MultipartFile file) throws Exception {
 

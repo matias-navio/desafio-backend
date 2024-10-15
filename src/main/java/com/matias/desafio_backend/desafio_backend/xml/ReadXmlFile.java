@@ -28,10 +28,11 @@ public class ReadXmlFile {
     @Autowired
     private ValidateMovements validateMovements;
 
-    /*
+    /**
      * Este metodo obtiene y lee el archivo XML
      *
-     * @Param filePath, es la ruta donde se encuentra el archivo que vamos a leer
+     * @param inputStream, es la ruta dinamica donde reconoce el archivo para leerlo
+     * @return companies, devuelve la lista de empresas encontradas en el archivo
     */
     public List<Company> createFile(InputStream inputStream){
 
@@ -60,11 +61,13 @@ public class ReadXmlFile {
         return companies;
     }
 
-    /*
+    /**
     * Metodo para devolver la lista de empresas del XML, tambien las guarda en DB
     * y avisa en caso de errores
     *
-    * @Param nodeCompaniesList, usa el nodo del XML para obtener la lista de empresas*/
+    * @param nodeCompaniesList, usa el nodo del XML para obtener la lista de empresas
+    * @return devuelve la lista de empresas obtenidas del XML con sus tags
+     * */
     public List<Company> companyList(NodeList nodeCompaniesList){
 
         List<Company> companiesList = new ArrayList<>();

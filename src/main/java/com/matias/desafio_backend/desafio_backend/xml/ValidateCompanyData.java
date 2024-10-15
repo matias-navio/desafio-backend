@@ -19,13 +19,14 @@ public class ValidateCompanyData {
             "Organizador", "Productor", "CIIU"
     };
 
-    /*
+    /**
      * Metodo que recorre la lista de tags y verifica si alguno falta o si
      * alguno tiene valores nulos
      *
-     * @Param company, es el Element que recibimos a la hora de leeer el XML
+     * @param company, es el Element que recibimos a la hora de leeer el XML
      * con los nodos
-     * */
+     * @return errors, devuelve una lista de Strings con los errores encontrados
+    */
     public List<String> validateCompany(Element company){
 
         List<String> errors = new ArrayList<>();
@@ -48,11 +49,12 @@ public class ValidateCompanyData {
         return errors;
     }
 
-    /*
+    /**
     * Este metodo sirve para interpretar los tags del XML y validar que luego que no sean nulos
     *
-    * @Param tag, es el nombre del tag
-    * @Param element, es el elemnto nodo
+    * @param tag, es el nombre del tag
+    * @param element, es el elemnto nodo
+     * @return deveria devolver un String con el nombre de una nodo
     * */
     private String getTagValue(String tag, Element element) {
         NodeList nodeList = element.getElementsByTagName(tag);
@@ -66,6 +68,5 @@ public class ValidateCompanyData {
             return node.getFirstChild().getNodeValue();
         }
         return null;
-
     }
 }
